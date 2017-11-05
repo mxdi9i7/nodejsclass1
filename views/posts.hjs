@@ -1,0 +1,53 @@
+hello i'm post
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+{{ title }}
+<h1>{{ name }}, i am {{ age }} years old</h1>
+
+<!-- get request -->
+
+<input type="text" id="username">
+<input type="text" id="password">
+<button id="btn">submit</button>
+<hr>
+<!-- post request -->
+<input type="text" id="author">
+<input type="text" id="comment">
+<button id="postBtn">Submit</button>
+
+
+
+
+<div class="container"></div>
+<script>
+    // get request
+    $('#btn').click(() => {
+        var username = $('#username').val()
+        var password = $('#password').val()
+        $.ajax({
+            url: `/posts/${username}/${password}`,
+            method: 'get',
+        }).then((data) => {
+            $('.container').append(`
+                <h1>${data.username}</h1>
+                <h1>${data.password}</h1>
+                <h1>${data.age}</h1>
+            `)
+        })
+    })
+
+    // post request
+    $('#postBtn').click(() => {
+        var author = $('#author').val()
+        var comment = $('#comment').val()
+        $.ajax({
+            method: 'post',
+            url: '/posts/addNewComment',
+            data: {
+                author,
+                comment
+            }
+        }).then((data) => {
+            console.log(data)
+        })
+    })
+</script>
