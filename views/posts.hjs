@@ -1,20 +1,43 @@
-hello i'm post
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-{{ title }}
-<h1>{{ name }}, i am {{ age }} years old</h1>
 
-<!-- get request -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../public/stylesheets/style.css">
+<style>
+        h1 {
+            border-style: solid;
+            border-color: #92a8d1;
+        }
+        
+        div.Post-name {
+            border-style: solid;
+            border-color: rgba(182, 104, 228, 0.23);
+        }
+        div.container{
+            border-style: solid;
+            border-color: #92a8d1;
+        }
+        div.Post-content {
+            border-style: solid;
+            border-color: #92D1A7;
+        }
+        /* #Post-div {
+            border-style: solid;
+            border-color: #D19292;
+        } */
+        </style>
+  </head>
+<body>
 
-<input type="text" id="username">
-<input type="text" id="password">
-<button id="btn">submit</button>
 <hr>
 <!-- post request -->
-<input type="text" id="author">
-<input type="text" id="comment">
+Name:<input type="text" id="author"><br>
+Post Content:<br>
+<textarea rows="4" cols="50" id="comment">
+    Enter what you want to say:
+</textarea>
 <button id="postBtn">Submit</button>
-
-
 
 
 <div class="container"></div>
@@ -34,20 +57,35 @@ hello i'm post
             `)
         })
     })
-
+    $('#comment').click(() => {
+        $('#comment').html(" ");
+    })
     // post request
     $('#postBtn').click(() => {
         var author = $('#author').val()
         var comment = $('#comment').val()
+        var date = Date();
         $.ajax({
             method: 'post',
             url: '/posts/addNewComment',
             data: {
                 author,
-                comment
+                comment,
+                date
             }
         }).then((data) => {
-            console.log(data)
+            $('.container').append(`
+            <div class="Post-name">
+                Name:<input disabled value=${data.author}></input>Post Date:${data.date}
+                <button type="button">Edit!</button>
+            </div>
+            <div > Post Content:<br>
+                <textarea rows="4" cols="50" id="comment" disabled>${data.comment}
+                </textarea>
+            </div>
+            `)
         })
     })
 </script>
+</body>
+</html>

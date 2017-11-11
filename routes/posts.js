@@ -30,6 +30,7 @@ router.get('/:username/:password', function(req, res, next) {
 })
 
 router.post('/addNewComment', (req, res, next) => {
+    
     console.log(req.body)
     res.json(req.body)
 })
