@@ -1,13 +1,20 @@
 var express = require('express');
 var router = express.Router();
-
-
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://admin:admin@ds259305.mlab.com:59305/class2', {useMongoClient: true})
+var db = mongoose.connection;
+mongoose.Promise = global.Promise;
+var cat = mongoose.model('cat', {name: String});
+console.log(db)
 router.get('/', function(req, res, next) {
-  res.render('posts', { 
-      title: 'posts title',
-      name: 'Peter ZHeng',
-      age: 20
-    });
+    commentsCollection.find((data) => {
+        console.log(data, db)
+        res.render('posts', { 
+            title: 'posts title',
+            name: 'Peter ZHeng',
+            age: 20
+        });
+    })
 });
 router.get('/:username/:password', function(req, res, next) {
     var { username } = req.params;
