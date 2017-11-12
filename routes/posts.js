@@ -1,14 +1,16 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://admin:admin@ds259305.mlab.com:59305/class2', {useMongoClient: true})
-var db = mongoose.connection;
+var db = mongoose.createConnection('mongodb://admin:admin@ds259305.mlab.com:59305/class2');
 mongoose.Promise = global.Promise;
-var cat = mongoose.model('cat', {name: String});
-console.log(db)
+var cat = db.model('cat',{name: String});
+var commentsModel = db.model('comments',new mongoose.Schema({_id:mongoose.Schema.Types.ObjectId,author: String,body:String,date:String}));
 router.get('/', function(req, res, next) {
-    commentsCollection.find((data) => {
-        console.log(data, db)
+    commentsModel.find({},(err,data) => {
+        if(err){
+            throw err;
+        }
+        console.log(data)
         res.render('posts', { 
             title: 'posts title',
             name: 'Peter ZHeng',
@@ -37,8 +39,15 @@ router.get('/:username/:password', function(req, res, next) {
 })
 
 router.post('/addNewComment', (req, res, next) => {
-    
-    console.log(req.body)
-    res.json(req.body)
+    const stringify = req.body;
+    console.log(req.body);
+    const insert = new commentsModel ({_id:new mongoose.Types.ObjectId,author:stringify.author,body:stringify.comment,date:stringify.date})
+    insert.save((err,docs)=>{
+        if(err){
+            res.json(err)
+        }else{
+            res.json(docs)
+        }
+    })
 })
 module.exports = router;
