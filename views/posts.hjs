@@ -3,7 +3,7 @@
 <html>
   <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="../public/stylesheets/style.css">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/style.css">
 <style>
         h1 {
             border-style: solid;
@@ -35,13 +35,78 @@
 Name:<input type="text" id="author"><br>
 Post Content:<br>
 <textarea rows="4" cols="50" id="comment">
-    Enter what you want to say:
 </textarea>
 <button id="postBtn">Submit</button>
 
 
 <div class="container"></div>
 <script>
+    //get initial data
+    (initializePage = () => {
+        $.ajax({
+            url: '/posts/initializePage',
+            method: 'get'
+        }).then((data) => {
+            data.forEach((e) => {
+                $('.container').append(`
+                    <div class="postContainer">
+                        <div class="Post-name">
+                            Name:<input disabled value="${e.author}">Post Date:${e.date}
+                            <button onclick="handleEdit(${e._id}, this)" type="button">Edit!</button>
+                            <button onclick="handleRemove(this)" type="button">${e._id}</button>
+                        </div>
+                        <div > Post Content:<br>
+                            <textarea rows="4" cols="50" class="comment">${e.body}
+                            </textarea>
+                        </div>
+                    </div>
+                `)
+            })
+        })
+    })()
+
+    handleRemove = (e) => {
+            var id = e.innerHTML
+            console.log(id)
+            $.post({
+                method: 'post',
+                url: '/posts/deleteComment',
+                data: {
+                    id
+                }
+            }).then((data) => {
+                $(e).parent().parent().remove()
+            })
+        }
+
+
+
+    // handleEdit = (id, e) => {
+    //     var id = id;
+    //     $.post({
+    //         method: 'post',
+    //         data: {id},
+    //         url: '/posts/editComment'
+    //     }).then((data) => {
+    //         var container = e.target.parent().parent()
+    //         container.empty()
+    //         container.append(`
+    //             <div class="postContainer">
+    //                 <div class="Post-name">
+    //                     Name:<input disabled value="${data.author}">Post Date:${data.date}
+    //                     <button onclick="handleEdit(${data._id}, this)" type="button">Edit!</button>
+    //                 </div>
+    //                 <div > Post Content:<br>
+    //                     <textarea rows="4" cols="50" class="comment">${data.body}
+    //                     </textarea>
+    //                 </div>
+    //             </div>
+    //         `)
+    //     })
+    // }
+       
+    
+
     // get request
     $('#btn').click(() => {
         var username = $('#username').val()
@@ -75,14 +140,17 @@ Post Content:<br>
             }
         }).then((data) => {
             $('.container').append(`
-            <div class="Post-name">
-                Name:<input disabled value=${data.author}></input>Post Date:${data.date}
-                <button type="button">Edit!</button>
-            </div>
-            <div > Post Content:<br>
-                <textarea rows="4" cols="50" id="comment" disabled>${data.comment}
-                </textarea>
-            </div>
+                <div class="postContainer">
+                    <div class="Post-name">
+                        Name:<input disabled value="${data.author}">Post Date:${data.date}
+                        <button onclick="handleEdit(${data._id}, this)" type="button">Edit!</button>
+                        <button onclick="handleRemove(this)" type="button">${data._id}</button>
+                    </div>
+                    <div > Post Content:<br>
+                        <textarea rows="4" cols="50" class="comment">${data.body}
+                        </textarea>
+                    </div>
+                </div>
             `)
         })
     })

@@ -1,14 +1,16 @@
 var express = require('express');
 var router = express.Router();
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://admin:admin@ds259305.mlab.com:59305/class2', {useMongoClient: true})
-var db = mongoose.connection;
-mongoose.Promise = global.Promise;
-var cat = mongoose.model('cat', {name: String});
-console.log(db)
+var Comments = require('../models/Comments.js');
+
+
+
 router.get('/', function(req, res, next) {
-    commentsCollection.find((data) => {
-        console.log(data, db)
+    Comments.find({
+        author: "James"
+    }).sort({
+        _id: -1
+    }).limit(1).exec((err, data) => {
+        console.log(data)
         res.render('posts', { 
             title: 'posts title',
             name: 'Peter ZHeng',
@@ -16,29 +18,33 @@ router.get('/', function(req, res, next) {
         });
     })
 });
-router.get('/:username/:password', function(req, res, next) {
-    var { username } = req.params;
-    var { password } = req.params;
-
-    trumpify = (x) => {
-        return x + "trump"
-    }
-    addTwo = (y) => {
-        return y + 2
-    }
-
-    var peter = {
-        username: trumpify(username),
-        password: trumpify(password),
-        age: addTwo(30),
-        married: false
-    }
-    res.json(peter)
+router.get('/initializePage', (req, res) => {
+    Comments.find().exec((err, data) => {
+        res.json(data)
+    })
 })
 
+// router.post('/editComment', (req, res) => {
+//     const id = req.body.id;
+//     Comments.findById(id, (err, comment) => {
+//         Comments = 
+//     })
+// })
+router.post('/deleteComment', (req, res) => {
+    const id = req.body.id;
+    Comments.remove({_id: id})
+    .exec((err, data) => {
+        res.json(data)
+    })
+})
 router.post('/addNewComment', (req, res, next) => {
-    
-    console.log(req.body)
-    res.json(req.body)
+    var newComment = new Comments({
+        author: req.body.author,
+        body: req.body.comment,
+        created_at: new Date()
+    })
+    newComment.save((err, data) => {
+        res.json(newComment)
+    })
 })
 module.exports = router;
